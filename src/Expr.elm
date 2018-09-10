@@ -4,8 +4,9 @@ type Expr
     = Num Float
     | Add Expr Expr
     | Sub Expr Expr
-    | Mult Expr Expr
+    | Mul Expr Expr
     | Div Expr Expr
+    | Pow Expr Expr
 
 
 eval : Expr -> Expr
@@ -27,13 +28,15 @@ eval expr =
             Num x ->
                 Num x
             Add e1 e2 ->
-                eval_ (+) (e1, e2)
+                eval_ (\a b -> b + a) (e1, e2)
             Sub e1 e2 ->
-                eval_ (-) (e1, e2)
-            Mult e1 e2 ->
-                eval_ (*) (e1, e2)
+                eval_ (\a b -> b - a) (e1, e2)
+            Mul e1 e2 ->
+                eval_ (\a b -> b * a) (e1, e2)
             Div e1 e2 ->
-                eval_ (/) (e1, e2)
+                eval_ (\a b -> b / a) (e1, e2)
+            Pow e1 e2 ->
+                eval_ (\a b -> b ^ a) (e1, e2)
 
 toString : Expr -> String
 toString expr =
@@ -44,7 +47,17 @@ toString expr =
             toString e1 ++ " + " ++ toString e2
         Sub e1 e2 ->
             toString e1 ++ " - " ++ toString e2
-        Mult e1 e2 ->
+        Mul e1 e2 ->
             toString e1 ++ " * " ++ toString e2
         Div e1 e2 ->
             toString e1 ++ " / " ++ toString e2
+        Pow e1 e2 ->
+            toString e1 ++ " ^ " ++ toString e2
+
+toNum : Expr -> Float
+toNum expr =
+    case expr of
+        Num x ->
+            x
+        _ ->
+            toNum (eval expr)
